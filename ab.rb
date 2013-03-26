@@ -8,9 +8,20 @@ class Ab < Formula
   depends_on 'homebrew/dupes/apr' if MacOS.version < :mountain_lion
   depends_on 'libtool' => :build
 
+  option 'with-ssl-patch', 'Apply patch for: Bug 49382 - ab says "SSL read failed"'
+
   def patches
     # Disable requirement for PCRE, because "ab" does not use it
-    DATA
+    patches = {
+      :p1 => DATA,
+    }
+
+    # Patch for https://issues.apache.org/bugzilla/show_bug.cgi?id=49382
+    if build.with? 'ssl-patch'
+      patches[:p0] = 'https://issues.apache.org/bugzilla/attachment.cgi?id=28435'
+    end
+
+    patches
   end
 
   def install
